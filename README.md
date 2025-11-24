@@ -1,8 +1,5 @@
 # Unified Command Centre  
 An Integrated Automation Platform for Communication, User Management & Workflow Execution
-**WorkFlow Chart:** <img width="1024" height="1536" alt="workflow chart" src="https://github.com/user-attachments/assets/3b2c83a8-3a60-4eae-861d-51ba48c069fd" />
-** FlowChart :**<img width="2006" height="1371" alt="Untitled centre flowchart" src="https://github.com/user-attachments/assets/c6e8f8f1-c7eb-4820-a198-e7d36d1a2cf1" />
-
 This project is developed as a complete MERN Stack + MySQL system that centralizes communication, user data, and automated workflows in one place.  
 While building this project, the aim was very simple — create something **practical**, **industry-ready**, and **honest** in functionality.  
 The system is developed entirely from scratch, with AI used only as an assistive tool to enhance clarity and decision-making—never as a replacement for original development.
@@ -192,5 +189,8 @@ I believe real skills come from writing real code — and this project reflects 
 
 ### ⭐ Thank you for reviewing this project!
 It means a lot.  🙏🏻
+
+**WorkFlow Chart:** <img width="1024" height="1536" alt="workflow chart" src="https://github.com/user-attachments/assets/3b2c83a8-3a60-4eae-861d-51ba48c069fd" />
+**FlowChart:** <img width="2006" height="1371" alt="Untitled centre flowchart" src="https://github.com/user-attachments/assets/c6e8f8f1-c7eb-4820-a198-e7d36d1a2cf1" />
 
 
