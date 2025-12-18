@@ -33,6 +33,11 @@ app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: "Internal Server Error" });
 });
+
+//for audio format
+//serve audio files
+app.use("/uploads", express.static("uploads"));
+
 initWhatsApp();
 
 const port = process.env.PORT || 5000;

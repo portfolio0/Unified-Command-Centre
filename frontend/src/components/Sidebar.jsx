@@ -10,28 +10,64 @@ const links = [
   { to: "/workflow-instances", label: "Workflow Instances" },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, onClose }) {
   const location = useLocation();
 
   return (
-    <div className="w-64 bg-gray-900 text-white h-screen fixed left-0 top-0 p-6">
-      <h1 className="text-2xl font-bold mb-8">AI Command Centre</h1>
+    <>
+      {/* Overlay for mobile */}
+      {isOpen && (
+        <div
+          onClick={onClose}
+          className="fixed inset-0 bg-black bg-opacity-40 z-40 md:hidden"
+        />
+      )}
 
-      <nav className="flex flex-col gap-3">
-        {links.map((link) => (
-          <Link
-            key={link.to}
-            to={link.to}
-            className={`px-3 py-2 rounded-md ${
-              location.pathname === link.to
-                ? "bg-gray-700"
-                : "hover:bg-gray-800"
-            }`}
+      {/* Sidebar */}
+      <aside
+        className={`fixed md:static top-0 left-0 h-screen w-64
+        bg-gray-900 text-white p-6 z-50
+        transform transition-transform duration-300
+        ${isOpen ? "translate-x-0" : "-translate-x-full"}
+        md:translate-x-0`}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-2xl font-bold">AI Command Centre</h1>
+
+          {/* Close button (mobile only) */}
+          <button
+            onClick={onClose}
+            className="md:hidden text-xl"
+            aria-label="Close sidebar"
           >
-            {link.label}
-          </Link>
-        ))}
-      </nav>
-    </div>
+            ✕
+          </button>
+        </div>
+
+        {/* Navigation */}
+        <nav className="flex flex-col gap-2">
+          {links.map((link) => {
+            const isActive = location.pathname === link.to;
+
+            return (
+              <Link
+                key={link.to}
+                to={link.to}
+                onClick={onClose} // close on mobile click
+                className={`px-3 py-2 rounded-md transition-colors
+                  ${
+                    isActive
+                      ? "bg-gray-700 text-white"
+                      : "text-gray-300 hover:bg-gray-800 hover:text-white"
+                  }`}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
+        </nav>
+      </aside>
+    </>
   );
 }

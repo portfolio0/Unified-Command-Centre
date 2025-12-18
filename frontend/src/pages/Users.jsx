@@ -1,4 +1,3 @@
-// src/pages/Users.jsx
 import { useEffect, useState } from "react";
 import { api } from "../services/api";
 
@@ -7,105 +6,112 @@ export default function Users() {
   const [editingUser, setEditingUser] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
 
-  const [form, setForm] = useState({ name: "", email: "", phone: "" });
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+  });
 
-  // Load users
+  // =====================
+  // LOAD USERS
+  // =====================
   const loadUsers = async () => {
-    try {
-      const res = await api.get("/users");
-      setUsers(res.data);
-    } catch (err) {
-      console.error("Failed to load users:", err);
-    }
+    const res = await api.get("/users");
+    setUsers(res.data);
   };
 
   useEffect(() => {
     loadUsers();
   }, []);
 
-  // ---------------------------------------------------
+  // =====================
+  // VALIDATION
+  // =====================
+  const validateUser = () => {
+    if (!form.name.trim() || form.name.length < 3) {
+      alert("Name must be at least 3 characters");
+      return false;
+    }
+
+    if (!/^(\d{10}|91\d{10})$/.test(form.phone)) {
+      alert("Phone must be 10 digits or start with 91XXXXXXXXXX");
+      return false;
+    }
+
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    if (!emailRegex.test(form.email)) {
+      alert("Invalid email address");
+      return false;
+    }
+
+    return true;
+  };
+
+  // =====================
   // ADD USER
-  // ---------------------------------------------------
+  // =====================
   const addUser = async () => {
-    try {
-      await api.post("/users", form);
+    if (!validateUser()) return;
 
-      alert("User added successfully!");
-      setShowAddForm(false);
-      setForm({ name: "", email: "", phone: "" });
+    await api.post("/users", form);
 
-      loadUsers();
-    } catch (err) {
-      console.error("Add user error:", err);
-      alert("Failed to add user");
-    }
+    setShowAddForm(false);
+    setForm({ name: "", email: "", phone: "" });
+    loadUsers();
   };
 
-  // ---------------------------------------------------
-  // SEND WHATSAPP
-  // ---------------------------------------------------
-  const sendWhatsApp = async (phone) => {
-    const msg = prompt("Enter WhatsApp message:");
-    if (!msg) return;
-
-    try {
-      await api.post("/whatsapp/send", { number: phone, message: msg });
-      alert("WhatsApp message sent!");
-    } catch (err) {
-      console.error("WhatsApp send error:", err);
-      alert("Failed to send WhatsApp message");
-    }
-  };
-
-  // ---------------------------------------------------
+  // =====================
   // EDIT USER
-  // ---------------------------------------------------
-  const startEdit = (user) => {
-    setEditingUser(user.id);
+  // =====================
+  const startEdit = (u) => {
+    setEditingUser(u.id);
     setForm({
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
+      name: u.name,
+      email: u.email,
+      phone: u.phone,
     });
   };
 
   const saveUser = async () => {
-    try {
-      await api.put(`/users/${editingUser}`, form);
-      alert("User updated successfully!");
+    if (!validateUser()) return;
 
-      setEditingUser(null);
-      setForm({ name: "", email: "", phone: "" });
+    await api.put(`/users/${editingUser}`, form);
 
-      loadUsers();
-    } catch (err) {
-      console.error("Update error:", err);
-      alert("Failed to update user");
-    }
+    setEditingUser(null);
+    setForm({ name: "", email: "", phone: "" });
+    loadUsers();
   };
 
-  // ---------------------------------------------------
+  // =====================
   // DELETE USER
-  // ---------------------------------------------------
+  // =====================
   const deleteUser = async (id) => {
-    if (!confirm("Are you sure you want to delete this user?")) return;
+    if (!confirm("Delete this user?")) return;
+    await api.delete(`/users/${id}`);
+    loadUsers();
+  };
 
-    try {
-      await api.delete(`/users/${id}`);
-      loadUsers();
-    } catch (err) {
-      console.error("Delete error:", err);
-      alert("Cannot delete — user has linked conversations or notifications");
-    }
+  // =====================
+  // SEND WHATSAPP
+  // =====================
+  const sendWhatsApp = async (phone) => {
+    const msg = prompt("Enter WhatsApp message:");
+    if (!msg) return;
+    await api.post("/whatsapp/send", { number: phone, message: msg });
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-semibold mb-6">Users</h1>
+    <div className="p-4">
+      <h1 className="text-2xl font-semibold mb-4">Users</h1>
 
       {/* ADD USER BUTTON */}
       <button
-        onClick={() => setShowAddForm(true)}
+        onClick={() => {
+          setShowAddForm(true);
+          setEditingUser(null);
+          setForm({ name: "", email: "", phone: "" });
+        }}
         className="bg-green-700 text-white px-4 py-2 rounded mb-4"
       >
         ➕ Add User
@@ -113,43 +119,33 @@ export default function Users() {
 
       {/* ADD USER FORM */}
       {showAddForm && (
-        <div className="bg-white shadow p-4 rounded mb-6">
-          <h2 className="text-xl font-medium mb-4">Add New User</h2>
+        <div className="bg-white shadow p-4 rounded mb-6 space-y-3">
+          <input
+            className="border p-2 w-full"
+            placeholder="Name"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+          />
+          <input
+            className="border p-2 w-full"
+            placeholder="Email"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+          />
+          <input
+            className="border p-2 w-full"
+            placeholder="Phone"
+            value={form.phone}
+            onChange={(e) => setForm({ ...form, phone: e.target.value })}
+          />
 
-          <div className="grid grid-cols-3 gap-4">
-            <input
-              type="text"
-              placeholder="Name"
-              className="border px-2 py-1"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-            />
-
-            <input
-              type="email"
-              placeholder="Email"
-              className="border px-2 py-1"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-            />
-
-            <input
-              type="text"
-              placeholder="Phone (91XXXXXXXXXX)"
-              className="border px-2 py-1"
-              value={form.phone}
-              onChange={(e) => setForm({ ...form, phone: e.target.value })}
-            />
-          </div>
-
-          <div className="mt-4 flex gap-2">
+          <div className="flex gap-2">
             <button
               onClick={addUser}
               className="bg-blue-600 text-white px-3 py-1 rounded"
             >
-              Save User
+              Save
             </button>
-
             <button
               onClick={() => setShowAddForm(false)}
               className="bg-gray-500 text-white px-3 py-1 rounded"
@@ -160,111 +156,160 @@ export default function Users() {
         </div>
       )}
 
-      {/* USERS TABLE */}
-      <div className="bg-white shadow rounded p-4">
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="bg-gray-200 border-b">
-              <th className="p-2">Name</th>
-              <th className="p-2">Email</th>
-              <th className="p-2">Phone</th>
+      {/* ================= MOBILE VIEW ================= */}
+      <div className="md:hidden space-y-4">
+        {users.map((u) => (
+          <div key={u.id} className="bg-white shadow rounded p-4">
+            {editingUser === u.id ? (
+              <>
+                <input
+                  className="border p-2 w-full mb-2"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                />
+                <input
+                  className="border p-2 w-full mb-2"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                />
+                <input
+                  className="border p-2 w-full mb-2"
+                  value={form.phone}
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                />
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={saveUser}
+                    className="bg-blue-600 text-white px-3 py-1 rounded"
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={() => setEditingUser(null)}
+                    className="bg-gray-500 text-white px-3 py-1 rounded"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="font-semibold">{u.name}</p>
+                <p className="text-sm">{u.email}</p>
+                <p className="text-sm">{u.phone}</p>
+
+                <div className="flex gap-2 pt-3">
+                  <button
+                    onClick={() => startEdit(u)}
+                    className="bg-blue-600 text-white px-3 py-1 rounded"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => deleteUser(u.id)}
+                    className="bg-red-600 text-white px-3 py-1 rounded"
+                  >
+                    Delete
+                  </button>
+                  <button
+                    onClick={() => sendWhatsApp(u.phone)}
+                    className="bg-green-700 text-white px-3 py-1 rounded"
+                  >
+                    WhatsApp
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* ================= DESKTOP VIEW ================= */}
+      <div className="hidden md:block bg-white shadow rounded">
+        <table className="w-full">
+          <thead className="bg-gray-200">
+            <tr>
+              <th className="p-2 text-left">Name</th>
+              <th className="p-2 text-left">Email</th>
+              <th className="p-2 text-left">Phone</th>
               <th className="p-2">Actions</th>
             </tr>
           </thead>
 
           <tbody>
-            {users.map((u) => (
-              <tr key={u.id} className="border-b hover:bg-gray-50">
-                {editingUser === u.id ? (
-                  <>
-                    <td className="p-2">
-                      <input
-                        type="text"
-                        className="border px-2 py-1 w-full"
-                        value={form.name}
-                        onChange={(e) =>
-                          setForm({ ...form, name: e.target.value })
-                        }
-                      />
-                    </td>
-
-                    <td className="p-2">
-                      <input
-                        type="email"
-                        className="border px-2 py-1 w-full"
-                        value={form.email}
-                        onChange={(e) =>
-                          setForm({ ...form, email: e.target.value })
-                        }
-                      />
-                    </td>
-
-                    <td className="p-2">
-                      <input
-                        type="text"
-                        className="border px-2 py-1 w-full"
-                        value={form.phone}
-                        onChange={(e) =>
-                          setForm({ ...form, phone: e.target.value })
-                        }
-                      />
-                    </td>
-
-                    <td className="p-2 flex gap-2">
-                      <button
-                        onClick={saveUser}
-                        className="bg-blue-600 text-white px-3 py-1 rounded"
-                      >
-                        Save
-                      </button>
-
-                      <button
-                        onClick={() => setEditingUser(null)}
-                        className="bg-gray-600 text-white px-3 py-1 rounded"
-                      >
-                        Cancel
-                      </button>
-                    </td>
-                  </>
-                ) : (
-                  <>
-                    <td className="p-2">{u.name}</td>
-                    <td className="p-2">{u.email}</td>
-                    <td className="p-2">{u.phone}</td>
-
-                    <td className="p-2 flex gap-2">
-                      <button
-                        onClick={() => startEdit(u)}
-                        className="bg-blue-600 text-white px-3 py-1 rounded"
-                      >
-                        Edit
-                      </button>
-
-                      <button
-                        onClick={() => deleteUser(u.id)}
-                        className="bg-red-600 text-white px-3 py-1 rounded"
-                      >
-                        Delete
-                      </button>
-
-                      <button
-                        onClick={() => sendWhatsApp(u.phone)}
-                        className="bg-green-700 text-white px-3 py-1 rounded"
-                      >
-                        WhatsApp
-                      </button>
-                    </td>
-                  </>
-                )}
-              </tr>
-            ))}
-
-            {users.length === 0 && (
-              <tr>
-                <td colSpan="4" className="text-center p-4 text-gray-500">
-                  No users found.
-                </td>
-              </tr>
+            {users.map((u) =>
+              editingUser === u.id ? (
+                <tr key={u.id}>
+                  <td className="p-2">
+                    <input
+                      className="border p-1 w-full"
+                      value={form.name}
+                      onChange={(e) =>
+                        setForm({ ...form, name: e.target.value })
+                      }
+                    />
+                  </td>
+                  <td className="p-2">
+                    <input
+                      className="border p-1 w-full"
+                      value={form.email}
+                      onChange={(e) =>
+                        setForm({ ...form, email: e.target.value })
+                      }
+                    />
+                  </td>
+                  <td className="p-2">
+                    <input
+                      className="border p-1 w-full"
+                      value={form.phone}
+                      onChange={(e) =>
+                        setForm({ ...form, phone: e.target.value })
+                      }
+                    />
+                  </td>
+                  <td className="p-2 flex gap-2">
+                    <button
+                      onClick={saveUser}
+                      className="bg-blue-600 text-white px-3 py-1 rounded"
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={() => setEditingUser(null)}
+                      className="bg-gray-500 text-white px-3 py-1 rounded"
+                    >
+                      Cancel
+                    </button>
+                  </td>
+                </tr>
+              ) : (
+                <tr key={u.id} className="border-t">
+                  <td className="p-2">{u.name}</td>
+                  <td className="p-2">{u.email}</td>
+                  <td className="p-2">{u.phone}</td>
+                  <td className="p-2 flex gap-2">
+                    <button
+                      onClick={() => startEdit(u)}
+                      className="bg-blue-600 text-white px-3 py-1 rounded"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => deleteUser(u.id)}
+                      className="bg-red-600 text-white px-3 py-1 rounded"
+                    >
+                      Delete
+                    </button>
+                    <button
+                      onClick={() => sendWhatsApp(u.phone)}
+                      className="bg-green-700 text-white px-3 py-1 rounded"
+                    >
+                      WhatsApp
+                    </button>
+                  </td>
+                </tr>
+              )
             )}
           </tbody>
         </table>
