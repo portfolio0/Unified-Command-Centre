@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import MainLayout from "./layouts/MainLayout";
+import Mainlayout from "./layouts/Mainlayout";
 
 import Dashboard from "./pages/Dashboard";
 import Users from "./pages/Users";
@@ -14,7 +14,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<MainLayout />}>
+        <Route path="/" element={<Mainlayout />}>
           <Route index element={<Dashboard />} />
           <Route path="users" element={<Users />} />
           <Route path="templates" element={<Templates />} />
