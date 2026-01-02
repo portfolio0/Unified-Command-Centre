@@ -1,69 +1,50 @@
 import { useState } from "react";
-import { api } from "../services/api";
-import { QRCodeSVG } from "qrcode.react";
+import { QRCodeCanvas } from "qrcode.react";
 
-export default function Makepayment() {
+export default function MakePayment() {
+  const [upiId, setUpiId] = useState("");
   const [amount, setAmount] = useState("");
-  const [upiLink, setUpiLink] = useState("");
+  const [upiUrl, setUpiUrl] = useState("");
 
-  const generateQr = async () => {
-    if (!amount || isNaN(amount)) {
-      alert("Enter valid amount");
-      return;
-    }
-
-    try {
-      const res = await api.get(`/payments/upi?amount=${amount}`);
-      setUpiLink(res.data.upiLink);
-    } catch (err) {
-      console.error(err);
-      alert("Failed to generate QR");
-    }
-  };
-
-  const openUpiApp = () => {
-    window.location.href = upiLink;
-    alert("Currently Working On Only Mobile Phones");
+  const generateQR = () => {
+    const url = `upi://pay?pa=${upiId}&pn=WebsiteUser&am=${amount}&cu=INR&tn=Website Payment`;
+    setUpiUrl(url);
   };
 
   return (
-    <div className="p-6 max-w-lg mx-auto">
-      <h1 className="text-2xl font-semibold mb-4">UPI Payment</h1>
+    <div style={{ padding: 30 }}>
+      <h2>UPI QR Payment</h2>
 
-      <div className="bg-white shadow rounded p-4 space-y-4">
-        <input
-          type="number"
-          placeholder="Enter Amount (₹)"
-          className="border p-2 w-full rounded"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-        />
+      <input
+        placeholder="Enter UPI ID"
+        value={upiId}
+        onChange={(e) => setUpiId(e.target.value)}
+      />
+      <br />
+      <br />
 
-        <button
-          onClick={generateQr}
-          className="bg-blue-600 text-white px-4 py-2 rounded w-full cursor-pointer"
-        >
-          Generate QR Code
-        </button>
+      <input
+        type="number"
+        placeholder="Enter Amount"
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+      />
+      <br />
+      <br />
 
-        {upiLink && (
-          <div className="text-center mt-4 flex items-center justify-center flex-col space-y-3">
-            <QRCodeSVG value={upiLink} size={220} />
-            <p className="text-sm text-gray-600">Scan using any UPI app</p>
+      <button onClick={generateQR}>Generate QR</button>
 
-            <button
-              onClick={openUpiApp}
-              className="bg-green-600 text-white px-4 py-2 rounded w-full cursor-pointer"
-            >
-              Open UPI App
-            </button>
-          </div>
-        )}
-      </div>
+      {upiUrl && (
+        <>
+          <br />
+          <br />
+          <QRCodeCanvas value={upiUrl} size={220} />
+          <p>Scan with any UPI App</p>
 
-      <p className="text-xs text-gray-500 mt-4">
-        ⚠ Payment confirmation is manual. No payment gateway used.
-      </p>
+          {/* Mobile users */}
+          <a href={upiUrl}>Pay Now</a>
+        </>
+      )}
     </div>
   );
 }
