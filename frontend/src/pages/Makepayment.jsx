@@ -14,7 +14,7 @@ export default function MakePayment() {
 
   const openUpiApp = () => {
     // This opens the UPI app chooser or default UPI app
-    window.location.href = "upi://pay";
+    window.location.href = "upi://pay?tn=Manual%20Payment&cu=INR";
   };
 
   return (
