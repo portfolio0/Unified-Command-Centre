@@ -2,15 +2,15 @@ import { useState } from "react";
 import { QRCodeCanvas } from "qrcode.react";
 
 export default function MakePayment() {
-  const [upiId, setUpiId] = useState("");
+  const [upiId, setUpiId] = useState("onkar@oksbi");
   const [amount, setAmount] = useState("");
-  const [upiUrl, setUpiUrl] = useState("");
+  // const [upiUrl, setUpiUrl] = useState("");
 
-  const generateQR = () => {
-    if (!upiId || !amount) return;
-    const url = `upi://pay?pa=${upiId}&pn=WebsiteUser&am=${amount}&cu=INR&tn=Website Payment`;
-    setUpiUrl(url);
-  };
+  // const generateQR = () => {
+  //   if (!upiId || !amount) return;
+  //   const url = `upi://pay?pa=${upiId}&pn=WebsiteUser&am=${amount}&cu=INR&tn=Website Payment`;
+  //   setUpiUrl(url);
+  // };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
@@ -30,6 +30,7 @@ export default function MakePayment() {
             value={upiId}
             onChange={(e) => setUpiId(e.target.value)}
             className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            disabled
           />
         </div>
 
@@ -44,19 +45,28 @@ export default function MakePayment() {
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            disabled
           />
         </div>
 
         {/* Generate Button */}
-        <button
+        {/* <button
           onClick={generateQR}
           className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition"
         >
           Generate QR Code
+        </button> */}
+        <button
+          onClick={() => {
+            window.location.href = "upi://";
+          }}
+          className="px-4 py-2 bg-indigo-600 text-white rounded cursor-pointer"
+        >
+          Pay via UPI
         </button>
 
         {/* QR Section */}
-        {upiUrl && (
+        {/* {upiUrl && (
           <div className="mt-6 text-center">
             <QRCodeCanvas value={upiUrl} size={220} />
             <p className="text-sm text-gray-600 mt-3">
@@ -70,7 +80,7 @@ export default function MakePayment() {
               Pay Now (Mobile Users)
             </a>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );
