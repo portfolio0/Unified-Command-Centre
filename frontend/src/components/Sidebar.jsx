@@ -8,6 +8,7 @@ const links = [
   { to: "/conversations", label: "Conversations" },
   { to: "/send", label: "Send Notification" },
   { to: "/workflow-instances", label: "Workflow Instances" },
+  { to: "/make-payment", label: "Make Payment💰" },
 ];
 
 export default function Sidebar({ isOpen, onClose }) {

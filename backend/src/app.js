@@ -12,7 +12,7 @@ import notificationsRoutes from "./routes/notifications.routes.js";
 import conversationsRoutes from "./routes/conversations.routes.js";
 import { initWhatsApp } from "./services/whatsapp.js";
 import whatsappRoutes from "./routes/whatsapp.routes.js";
-
+import paymentsRoutes from "./routes/payments.routes.js";
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -28,6 +28,7 @@ app.use("/api/workflow-instances", workflowinstancesRoutes);
 app.use("/api/notifications", notificationsRoutes);
 app.use("/api/conversations", conversationsRoutes);
 app.use("/api/whatsapp", whatsappRoutes);
+app.use("/api/payments", paymentsRoutes);
 // global error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);

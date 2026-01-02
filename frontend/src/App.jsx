@@ -8,6 +8,7 @@ import Workflows from "./pages/Workflows";
 import Conversations from "./pages/Conversations";
 import Sendnotification from "./pages/Sendnotifications";
 import Workflowinstances from "./pages/Workflowinstance";
+import Makepayment from "./pages/Makepayment";
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
           <Route path="conversations" element={<Conversations />} />
           <Route path="send" element={<Sendnotification />} />
           <Route path="/workflow-instances" element={<Workflowinstances />} />
+          <Route path="/make-payment" element={<Makepayment />} />
         </Route>
       </Routes>
     </BrowserRouter>
